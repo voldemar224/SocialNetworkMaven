@@ -42,6 +42,10 @@ public class SocialNetworkMember {
         newFriend.writeNewFriendToFriends(this.id);
     }
 
+    public void removeFriend(int friendId) {
+        friends.remove(friendId);
+    }
+
     private void writeNewFriendToFriends(int newFriendId) {
         friends.add(newFriendId);
     }
