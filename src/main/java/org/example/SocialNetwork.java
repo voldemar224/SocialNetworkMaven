@@ -2,7 +2,16 @@ package org.example;
 import java.util.*;
 
 public class SocialNetwork {
-    private Set<SocialNetworkMember> members = new HashSet<>();
+    Set<SocialNetworkMember> members = new HashSet<>();
+
+    public SocialNetwork(Set<SocialNetworkMember> members) {
+        this.members.addAll(members);
+        for (SocialNetworkMember member: this.members) {
+            for (int friendsId: member.getFriends()) {
+                member.addFriend(getMemberById(friendsId));
+            }
+        }
+    }
 
     public void addMember(SocialNetworkMember member) {
         members.add(member);
@@ -26,15 +35,16 @@ public class SocialNetwork {
                 receiversId.add(friendId);
                 SocialNetworkMember friend = getMemberById(friendId);
                 for (int friendOfFriend : friend.getFriends())
-                    receiversId.add(friendOfFriend);
+                    if (friendOfFriend != senderId)
+                        receiversId.add(friendOfFriend);
             }
-            return receiversId.size() - 1;
+            return receiversId.size();
         } catch (NullPointerException e) {
             throw (new IllegalArgumentException("There is no user with such id"));
         }
     }
 
-    private SocialNetworkMember getMemberById(int memberId) {
+    public SocialNetworkMember getMemberById(int memberId) {
         for (SocialNetworkMember member: members) {
             if (member.getId() == memberId)
                 return member;
@@ -62,7 +72,12 @@ public class SocialNetwork {
     public int getReceiversQuantityVar2(int senderId) {
         UnionFind uf = unionMembers();
 
-        return uf.findComponentSize(senderId) - 1;
+        int receiversQuantity = uf.findComponentSize(senderId);
+
+        if (receiversQuantity == 0)
+            return 0;
+        else
+            return receiversQuantity - 1;
     }
 
     private UnionFind unionMembers() {
